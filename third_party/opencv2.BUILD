@@ -18,7 +18,6 @@ cc_library(
     ]) + [
         "custom_hal.hpp",
         "cvconfig.h",
-        "opencl_kernels_core.hpp",
         "opencv2/opencv_modules.hpp",
         "version_string.inc",
     ],
