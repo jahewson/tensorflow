@@ -5,7 +5,6 @@ cc_library(
        "src/util.h"
     ]),
     hdrs = glob(["include/*.h"]),
-    includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
        "@eigen_archive//:eigen",
