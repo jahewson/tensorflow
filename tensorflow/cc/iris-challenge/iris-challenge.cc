@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   tf::GraphDef graph_def;
   TF_CHECK_OK(ReadBinaryProto(tf::Env::Default(), graph_path, &graph_def));
 
-  tf::Session *session = tf::NewSession(tf::SessionOptions());
+  std::unique_ptr<tf::Session> session(tf::NewSession(tf::SessionOptions()));
   TF_CHECK_OK(session->Create(graph_def));
 
   // iterate over files with posix glob
@@ -49,10 +49,12 @@ int main(int argc, char* argv[]) {
     processImage(image_path, out_path, session);
   }
 
+  TF_CHECK_OK(session->Close());
+
   return 0;
 }
 
-void processImage(const std::string& image_path, const std::string& out_path, tf::Session* session) {
+void processImage(const std::string& image_path, const std::string& out_path, std::unique_ptr<tf::Session>& session) {
   // read image from disk
   tf::Tensor tf_input;
   cv::Mat src_image;
@@ -244,7 +246,8 @@ void runCRF(const tf::Tensor& tf_scores, tf::Tensor tf_image, Tensor<float, 3, R
   MatrixXf crf_probs = crf.inference(max_iterations);
 
   // map the (h*w, ch) matrix back to a (h, w, ch) tensor
-  output = TensorMap<Tensor<float, 3, RowMajor>>(crf_probs.data(), height, width, num_channels);
+  output = Tensor<float, 3, RowMajor>(height, width, num_channels);
+  std::copy_n(crf_probs.data(), height * width * num_channels, output.data());
 }
 
 void drawLabel(cv::Mat& image, cv::Mat& labels, cv::Mat& probs, Label label, cv::Scalar color, cv::Mat& dst) {

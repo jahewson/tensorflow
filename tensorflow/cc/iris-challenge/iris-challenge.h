@@ -17,7 +17,7 @@ enum Label {
   WATER = 4
 };
 
-void processImage(const std::string& image_path, const std::string& out_path, tensorflow::Session* session);
+void processImage(const std::string& image_path, const std::string& out_path, std::unique_ptr<tensorflow::Session>& session);
 void readImage(const std::string& file_name, tensorflow::Tensor& out_tensor, cv::Mat& out_image);
 void runCRF(const  tensorflow::Tensor& tf_scores, tensorflow::Tensor tf_image, Eigen::Tensor<float, 3, Eigen::RowMajor>& output);
 void drawLabel(cv::Mat& image, cv::Mat& labels, cv::Mat& probs, Label label, cv::Scalar color, cv::Mat& dst);
